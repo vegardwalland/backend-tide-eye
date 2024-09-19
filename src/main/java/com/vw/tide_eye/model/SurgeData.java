@@ -18,14 +18,15 @@ public class SurgeData implements Serializable {
     private Integer year;
     private Integer month;
     private Integer day;
-    private Integer prognosis;
+    private Integer hour;
+    //private Integer prognosis;
     private Float surge;
     private Float tide;
     private Float total;
-    private Float surgePercentage0;
+    /*private Float surgePercentage0;
     private Float surgePercentage25;
     private Float surgePercentage50;
     private Float surgePercentage75;
-    private Float surgePercentage100;
+    private Float surgePercentage100;*/
 
 }
