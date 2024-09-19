@@ -1,6 +1,7 @@
 package com.vw.tide_eye.controller;
 
 import com.vw.tide_eye.exception.TideDataFetchException;
+import com.vw.tide_eye.model.Harbor;
 import com.vw.tide_eye.service.TideService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,7 @@ public class HarborController {
     }
 
     @GetMapping
-    public List<String> getHarbors() throws TideDataFetchException {
+    public List<Harbor> getHarbors() throws TideDataFetchException {
         return tideService.fetchHarbors();
     }
 }

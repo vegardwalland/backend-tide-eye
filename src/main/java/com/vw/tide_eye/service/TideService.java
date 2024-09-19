@@ -3,6 +3,7 @@ package com.vw.tide_eye.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vw.tide_eye.exception.TideDataFetchException;
+import com.vw.tide_eye.model.Harbor;
 import com.vw.tide_eye.model.SurgeData;
 import com.vw.tide_eye.model.Tide;
 import com.vw.tide_eye.utils.DateTimeConverter;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class TideService {
@@ -69,19 +71,26 @@ public class TideService {
     }
 
     @Cacheable(value = "harbors", unless = "#result == null")
-    public List<String> fetchHarbors() throws TideDataFetchException {
+    public List<Harbor> fetchHarbors() throws TideDataFetchException {
         String url = "https://api.met.no/weatherapi/tidalwater/1.1/locations";
         String response = restTemplate.getForObject(url, String.class);
 
         // Only need the harbor names, so parse the response to get them
+
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode root = mapper.readTree(response);
             JsonNode featuresNode = root.path("features");
 
-            return featuresNode.findValues("title")
-                    .stream()
-                    .map(JsonNode::asText)
+            return StreamSupport.stream(featuresNode.spliterator(), false)
+                    .map(feature -> {
+                        Harbor harbor = new Harbor();
+                        harbor.setName(feature.path("title").asText());
+                        JsonNode coordinates = feature.path("geometry").path("coordinates");
+                        harbor.setLongitude(coordinates.get(0).asDouble());
+                        harbor.setLatitude(coordinates.get(1).asDouble());
+                        return harbor;
+                    })
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new TideDataFetchException("Error parsing harbor data", e);
