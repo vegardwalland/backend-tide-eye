@@ -75,7 +75,7 @@ public class TideService {
         String url = "https://api.met.no/weatherapi/tidalwater/1.1/locations";
         String response = restTemplate.getForObject(url, String.class);
 
-        // Only need the harbor names, so parse the response to get them
+        // Only need the harbor names, longitudes and latitudes, so parse the response to get them
 
         ObjectMapper mapper = new ObjectMapper();
         try {
